@@ -24,6 +24,14 @@
   <title>Paris Métro 1</title>
   <link rel="stylesheet" type="text/css" href="styles/inline.css">
 
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Paris Metro PWA">
+  <link rel="apple-touch-icon" href="/images/icons/icon-152x152.png">
+  <meta name="description" content="A sample Paris metro app">
+  <meta name="theme-color" content="#2F3BA2" />
+
 </head>
 <body>
 
@@ -92,7 +100,15 @@
   </div>
 
   <!-- Uncomment the line below when ready to test with fake data -->
+  <script src="https://cdn.jsdelivr.net/npm/idb@3.0.2/build/idb.min.js"></script>
   <script src="scripts/app.js" async></script>
+  <script>
+    if('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js');
+      });
+    }
+  </script>
 
 </body>
 </html>

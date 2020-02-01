@@ -1,6 +1,27 @@
 (function () {
     'use strict';
 
+    //check for support
+    if (!('indexedDB' in window)) {
+        console.log('This browser doesn\'t support IndexedDB');
+        return;
+    }
+
+    var INDEXEDDB_NAME = 'IDB';
+    var OBJECTSTORE = 'timetable';
+    var db;
+
+    async function getTimeTable(){
+        while(db.isLoading) {}
+        let db = request.result;
+        let tx = db.transaction('timeTable');
+        let timeTable = tx.objectStore('timeTable');
+
+        let records = await timeTable.getAll();
+
+        console.log(records);
+    }
+
     var app = {
         isLoading: true,
         visibleCards: {},
@@ -29,8 +50,6 @@
     });
 
     document.getElementById('butAddCity').addEventListener('click', function () {
-
-
         var select = document.getElementById('selectTimetableToAdd');
         var selected = select.options[select.selectedIndex];
         var key = selected.value;
@@ -40,6 +59,7 @@
         }
         app.getSchedule(key, label);
         app.selectedTimetables.push({key: key, label: label});
+        app.updateSelectedTimeTableIndexedDB();
         app.toggleAddDialog(false);
     });
 
@@ -105,6 +125,50 @@
 
     /*****************************************************************************
      *
+     * Methods for dealing with the IndexedDB data
+     *
+     ****************************************************************************/
+
+    app.initSchedules = async function() {
+        var transaction = await db.transaction(OBJECTSTORE, 'readonly');
+        var objectStore = await transaction.objectStore(OBJECTSTORE);
+        var objectRequest = objectStore.getAll();
+        objectRequest.onsuccess = function(event) {
+            if(event.target.result !== undefined)
+            {
+                var timeTable = event.target.result;
+                if(timeTable.length > 0) {
+                    timeTable.forEach(function(item) { 
+                        app.getSchedule(item.key, item.label);
+                        app.selectedTimetables.push({key: item.key, label: item.label}) 
+                    });
+                }
+                else
+                {
+                    app.selectedTimetables = [{key: initialStationTimetable.key, label: initialStationTimetable.label}];
+                    app.updateSelectedTimeTableIndexedDB();
+                }
+            }
+        }
+    }
+
+    app.updateSelectedTimeTableIndexedDB = async function () {
+        var transaction = await db.transaction(OBJECTSTORE, 'readwrite');
+        var objectStore = await transaction.objectStore(OBJECTSTORE);
+        var clearRequest = await objectStore.clear();
+        app.selectedTimetables.forEach(function(item) {
+            var db_op_req = objectStore.add(item);
+            db_op_req.onsuccess = function(){
+                console.log('timetable added to the store', db_op_req.result);
+            }
+            db_op_req.onerror = function() {
+                console.log('error adding timetable to the store', db_op_req.error);
+            }
+        });
+    }
+
+    /*****************************************************************************
+     *
      * Methods for dealing with the model
      *
      ****************************************************************************/
@@ -126,7 +190,7 @@
                     app.updateTimetableCard(result);
                 }
             } else {
-                // Return the initial weather forecast since no data is available.
+                // Return the initial metro schedule forecast since no data is available.
                 app.updateTimetableCard(initialStationTimetable);
             }
         };
@@ -168,7 +232,6 @@
 
     };
 
-
     /************************************************************************
      *
      * Code required to start the app
@@ -180,8 +243,19 @@
      *   SimpleDB (https://gist.github.com/inexorabletash/c8069c042b734519680c)
      ************************************************************************/
 
-    app.getSchedule('metros/1/bastille/A', 'Bastille, Direction La Défense');
-    app.selectedTimetables = [
-        {key: initialStationTimetable.key, label: initialStationTimetable.label}
-    ];
+    let request = indexedDB.open(INDEXEDDB_NAME, 1);
+    request.onsuccess = function(event) {
+        console.log('[onsuccess]', request.result);
+        db = request.result;
+
+        app.initSchedules();
+
+        app.getSchedule('metros/1/bastille/A', 'Bastille, Direction La Défense');
+    };
+    request.onupgradeneeded = function() {
+        db = request.result;
+        if(!db.objectStoreNames.contains(OBJECTSTORE))
+            db.createObjectStore(OBJECTSTORE, {keyPath: 'key'});
+    };
+
 })();
