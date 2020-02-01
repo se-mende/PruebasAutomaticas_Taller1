@@ -12,5 +12,26 @@ El proyecto hace uso de *workbox* para el manejo del *service-worker*, el precac
 
 <img src="https://developers.google.com/web/tools/workbox/images/modules/workbox-strategies/stale-while-revalidate.png" alt="Stale while revalidate" width="500">
 
+<img src="https://github.com/se-mende/PruebasAutomaticas_Taller1/blob/master/Screenshots%20Proceso/Workbox.png" alt="Workbox" width="500">
+
 Las estaciones agregadas son guardadas utilizando *IndexedDB*. Para esto se utilizó la implementación nativa al iniciar la aplicación, y con dos funciones llamadas _app.initSchedules_ y _app.updateSelectedTimeTableIndexedDB_. Pueden encontrar estas funciones en el archivo scripts/app.js.
 
+<img src="https://github.com/se-mende/PruebasAutomaticas_Taller1/blob/master/Screenshots%20Proceso/IndexedDB.png" alt="IndexedDB" width="500">
+
+Por último, un archivo manifest.json fue agregado, y se configuró la correspondiente metadata para que la aplicación se integrara nativamente a Android y iOS.
+
+## Screenshots de los resultados:
+
+# Estado inicial de la aplicación
+
+[Estado inicial 1](https://github.com/se-mende/PruebasAutomaticas_Taller1/blob/master/Screenshots%20Proceso/Resultados%20ratp-pwa%20inicial%201.png)
+
+[Estado inicial 2](https://github.com/se-mende/PruebasAutomaticas_Taller1/blob/master/Screenshots%20Proceso/Resultados%20ratp-pwa%20inicial%202.png)
+
+# Estado final de la aplicación
+
+<img src="https://github.com/se-mende/PruebasAutomaticas_Taller1/blob/master/Screenshots%20Proceso/Resultados%20ratp-pwa%20Final%201.png" alt="Final 1" width="500">
+
+<img src="https://github.com/se-mende/PruebasAutomaticas_Taller1/blob/master/Screenshots%20Proceso/Resultados%20ratp-pwa%20Final%202.png" alt="Final 2" width="500">
+
+<img src="https://github.com/se-mende/PruebasAutomaticas_Taller1/blob/master/Screenshots%20Proceso/Resultados%20ratp-pwa%20Final%203.png" alt="Final 3" width="500">
